@@ -12,35 +12,51 @@ use Illuminate\Support\Str;
 class AuthController extends Controller
 {
     // INSCRIPTION
-    public function register(Request $request)
-    {
-        $request->validate([
-            'email'    => 'required|email|unique:users,email',
-            'password' => 'required|min:6',
-            'nom'      => 'required|string',
-            'prenom'   => 'required|string',
-            'telephone'=> 'nullable|string',
-        ]);
+public function register(Request $request)
+{
+    $request->validate([
+        'email'     => 'required|email|unique:users,email',
+        'password'  => 'required|min:6',
+        'nom'       => 'required|string',
+        'prenom'    => 'required|string',
+        'telephone' => 'nullable|string',
+    ]);
 
-        $user = User::create([
-            'id'            => Str::uuid(),
-            'email'         => $request->email,
-            'password_hash' => Hash::make($request->password),
-            'nom'           => $request->nom,
-            'prenom'        => $request->prenom,
-            'telephone'     => $request->telephone,
-            'role'          => 'citoyen',
-            'est_verifie'   => true,
-        ]);
+    $uuid = (string) Str::uuid();
 
-        $token = JWTAuth::fromUser($user);
+    User::insert([
+        'id'            => $uuid,
+        'email'         => $request->email,
+        'password_hash' => Hash::make($request->password),
+        'nom'           => $request->nom,
+        'prenom'        => $request->prenom,
+        'telephone'     => $request->telephone,
+        'role'          => 'citoyen',
+        'est_verifie'   => true,
+        'score_fiabilite' => 100,
+        'nb_signalements' => 0,
+        'nb_confirmations' => 0,
+        'nb_faux_positifs' => 0,
+        'est_banni'     => false,
+        'created_at'    => now(),
+        'updated_at'    => now(),
+    ]);
 
-        return response()->json([
-            'message' => 'Inscription réussie',
-            'user'    => $user,
-            'token'   => $token
-        ], 201);
+    // Recharge depuis la base avec Eloquent
+    $user = User::where('id', $uuid)->first();
+
+    if (!$user) {
+        return response()->json(['message' => 'Erreur création utilisateur'], 500);
     }
+
+    $token = JWTAuth::fromUser($user);
+
+    return response()->json([
+        'message' => 'Inscription réussie',
+        'user'    => $user,
+        'token'   => $token
+    ], 201);
+}
 
     // CONNEXION
     public function login(Request $request)
