@@ -1,0 +1,71 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  height: 56px;
+  background: #12151c;
+  border-bottom: 1px solid #252a38;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+}
+
+.logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 24px;
+  letter-spacing: 3px;
+  color: #ff3b3b;
+  text-decoration: none;
+}
+.logo span { color: #e8eaf0; }
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-link {
+  color: #6b7280;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color .2s;
+}
+.nav-link:hover { color: #e8eaf0; }
+
+.user-badge {
+  background: #1a1e28;
+  border: 1px solid #252a38;
+  border-radius: 100px;
+  padding: 4px 12px;
+  font-size: 13px;
+  color: #e8eaf0;
+}
+
+.btn-login {
+  background: #ff3b3b;
+  color: white;
+  padding: 6px 16px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.btn-logout {
+  background: transparent;
+  border: 1px solid #252a38;
+  color: #6b7280;
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+}
+.btn-logout:hover { color: #ff3b3b; border-color: #ff3b3b; }

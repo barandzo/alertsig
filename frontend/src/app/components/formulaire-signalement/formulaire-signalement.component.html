@@ -1,0 +1,96 @@
+<div class="overlay" (click)="fermerModal()">
+  <div class="modal" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <h2 class="modal-title">Signaler un incident</h2>
+      <button class="close-btn" (click)="fermerModal()">✕</button>
+    </div>
+
+    <div class="modal-body">
+
+      <!-- Succès -->
+      <div class="success-msg" *ngIf="success">
+        ✅ Signalement envoyé avec succès !
+      </div>
+
+      <!-- Erreur -->
+      <div class="error-msg" *ngIf="error">
+        ⚠️ {{ error }}
+      </div>
+
+      <!-- Type d'incident -->
+      <div class="form-group">
+        <label class="form-label">Type d'incident</label>
+        <div class="type-grid">
+          <div
+            *ngFor="let type of types"
+            class="type-option"
+            [class.selected]="selectedTypeId === type.id"
+            (click)="selectedTypeId = type.id">
+            <div class="type-emoji">{{ type.emoji }}</div>
+            <div class="type-label">{{ type.libelle }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sévérité -->
+      <div class="form-group">
+        <label class="form-label">Sévérité</label>
+        <div class="severite-btns">
+          <button
+            class="sev-btn"
+            [class.active-faible]="selectedSeverite === 1"
+            (click)="selectSeverite(1)">
+            🟡 Faible
+          </button>
+          <button
+            class="sev-btn"
+            [class.active-moyen]="selectedSeverite === 2"
+            (click)="selectSeverite(2)">
+            🟠 Modéré
+          </button>
+          <button
+            class="sev-btn"
+            [class.active-critique]="selectedSeverite === 3"
+            (click)="selectSeverite(3)">
+            🔴 Critique
+          </button>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <textarea
+          class="form-input"
+          [(ngModel)]="description"
+          placeholder="Décrivez l'incident...">
+        </textarea>
+      </div>
+
+      <!-- Position GPS -->
+      <div class="form-group">
+        <label class="form-label">Position GPS</label>
+        <div class="location-box">
+          <span class="location-dot" [class.loading]="localisationEnCours"></span>
+          <span *ngIf="localisationEnCours">Localisation en cours...</span>
+          <span *ngIf="!localisationEnCours && latitude">
+            {{ latitude!.toFixed(5) }}, {{ longitude!.toFixed(5) }}
+          </span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="fermerModal()">Annuler</button>
+      <button
+        class="btn-submit"
+        (click)="soumettre()"
+        [disabled]="loading || localisationEnCours">
+        {{ loading ? 'Envoi...' : '📡 Envoyer' }}
+      </button>
+    </div>
+
+  </div>
+</div>
