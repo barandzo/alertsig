@@ -5,54 +5,87 @@
 
   <!-- Panel détail incident -->
   <div class="detail-panel" [class.open]="selectedIncident">
-    <div class="detail-header" *ngIf="selectedIncident">
-      <div>
-        <div class="detail-icon">{{ selectedIncident.type_emoji }}</div>
-        <div class="detail-type">{{ selectedIncident.type_libelle }}</div>
-        <div class="detail-time">{{ selectedIncident.created_at | date:'dd/MM/yyyy HH:mm' }}</div>
-      </div>
-      <button class="close-btn" (click)="fermerDetail()">✕</button>
-    </div>
+    <ng-container *ngIf="selectedIncident">
 
-    <div class="detail-body" *ngIf="selectedIncident">
+      <!-- Header -->
+      <div class="detail-header">
+        <div class="detail-header-left">
+          <div class="detail-icon">{{ selectedIncident.type_emoji }}</div>
+          <div>
+            <div class="detail-type">{{ selectedIncident.type_libelle }}</div>
+            <div class="detail-time">
+              {{ selectedIncident.created_at | date:'dd/MM/yyyy à HH:mm' }}
+            </div>
+          </div>
+        </div>
+        <button class="close-btn" (click)="fermerDetail()">✕</button>
+      </div>
+
+      <!-- Titre -->
+      <div class="detail-titre" *ngIf="selectedIncident.titre">
+        {{ selectedIncident.titre }}
+      </div>
+
+      <!-- Statut + Sévérité -->
+      <div class="detail-badges">
+        <span class="badge" [ngClass]="getStatutClass(selectedIncident.statut)">
+          {{ getStatutLabel(selectedIncident.statut) }}
+        </span>
+        <span class="badge badge-severite">
+          {{ getSeveriteLabel(selectedIncident.severite) }}
+        </span>
+      </div>
+
+      <!-- Infos -->
       <div class="detail-section">
-        <div class="detail-row">
-          <span class="key">Statut</span>
-          <span class="val">{{ getStatutLabel(selectedIncident.statut) }}</span>
-        </div>
-        <div class="detail-row">
-          <span class="key">Sévérité</span>
-          <span class="val">{{ getSeveriteLabel(selectedIncident.severite) }}</span>
-        </div>
+        <div class="section-title">INFORMATIONS</div>
         <div class="detail-row">
           <span class="key">Signalé par</span>
           <span class="val">{{ selectedIncident.signale_par_nom }}</span>
         </div>
         <div class="detail-row">
           <span class="key">Confirmations</span>
-          <span class="val">{{ selectedIncident.nb_confirmations }}</span>
+          <span class="val">✓ {{ selectedIncident.nb_confirmations }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="key">Score confiance</span>
+          <span class="val">{{ selectedIncident.score_confiance }}%</span>
         </div>
       </div>
 
+      <!-- Localisation -->
       <div class="detail-section">
+        <div class="section-title">LOCALISATION</div>
         <div class="detail-row">
           <span class="key">Adresse</span>
-          <span class="val">{{ selectedIncident.adresse }}</span>
+          <span class="val">{{ selectedIncident.adresse || '—' }}</span>
         </div>
         <div class="detail-row">
           <span class="key">Quartier</span>
-          <span class="val">{{ selectedIncident.quartier }}</span>
+          <span class="val">{{ selectedIncident.quartier || '—' }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="key">Coordonnées</span>
+          <span class="val coord">
+            {{ selectedIncident.latitude?.toFixed(4) }},
+            {{ selectedIncident.longitude?.toFixed(4) }}
+          </span>
         </div>
       </div>
 
+      <!-- Description -->
       <div class="detail-section" *ngIf="selectedIncident.description">
+        <div class="section-title">DESCRIPTION</div>
         <p class="description">{{ selectedIncident.description }}</p>
       </div>
 
+      <!-- Zone critique -->
       <div class="zone-critique-badge" *ngIf="selectedIncident.est_zone_critique">
-        🚨 Zone critique — {{ selectedIncident.nb_incidents_proches + 1 }} incidents dans 1km
+        🚨 Zone critique —
+        {{ selectedIncident.nb_incidents_proches + 1 }} incidents dans 1km
       </div>
-    </div>
+
+    </ng-container>
   </div>
 
 </div>

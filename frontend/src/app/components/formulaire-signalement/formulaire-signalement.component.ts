@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IncidentService } from '../../services/incident.service';
 import { TypeIncidentService } from '../../services/type-incident.service';
+import { CarteEventService } from '../../services/carte-event.service';
 import { TypeIncident } from '../../models/type-incident';
 
 @Component({
@@ -27,10 +28,12 @@ export class FormulaireSignalementComponent implements OnInit {
   success: boolean = false;
   error: string = '';
   localisationEnCours: boolean = true;
+  localisationErreur: boolean = false;
 
   constructor(
     private incidentService: IncidentService,
-    private typeService: TypeIncidentService
+    private typeService: TypeIncidentService,
+    private carteEventService: CarteEventService
   ) {}
 
   ngOnInit(): void {
@@ -44,23 +47,36 @@ export class FormulaireSignalementComponent implements OnInit {
   }
 
   getLocation(): void {
-    this.localisationEnCours = true;
+    this.localisationEnCours  = true;
+    this.localisationErreur   = false;
+
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         pos => {
-          this.latitude  = pos.coords.latitude;
-          this.longitude = pos.coords.longitude;
-          this.precision = pos.coords.accuracy;
-          this.localisationEnCours = false;
+          this.latitude             = pos.coords.latitude;
+          this.longitude            = pos.coords.longitude;
+          this.precision            = pos.coords.accuracy;
+          this.localisationEnCours  = false;
         },
         () => {
-          // Position simulée (Lomé)
-          this.latitude  = 6.1375 + (Math.random() - 0.5) * 0.01;
-          this.longitude = 1.2123 + (Math.random() - 0.5) * 0.01;
+          // Position simulée si GPS refusé
+          this.latitude            = 6.1375 + (Math.random() - 0.5) * 0.01;
+          this.longitude           = 1.2123 + (Math.random() - 0.5) * 0.01;
           this.localisationEnCours = false;
-        }
+          this.localisationErreur  = true;
+        },
+        { timeout: 10000, enableHighAccuracy: true }
       );
+    } else {
+      this.latitude            = 6.1375;
+      this.longitude           = 1.2123;
+      this.localisationEnCours = false;
+      this.localisationErreur  = true;
     }
+  }
+
+  selectType(id: number): void {
+    this.selectedTypeId = id;
   }
 
   selectSeverite(s: 1 | 2 | 3): void {
@@ -88,9 +104,14 @@ export class FormulaireSignalementComponent implements OnInit {
       next: () => {
         this.loading = false;
         this.success = true;
+
+        // Recharge la carte automatiquement
+        this.carteEventService.rechargerCarte();
+
+        // Ferme le formulaire après 2 secondes
         setTimeout(() => {
           this.fermer.emit();
-        }, 1500);
+        }, 2000);
       },
       error: err => {
         this.loading = false;

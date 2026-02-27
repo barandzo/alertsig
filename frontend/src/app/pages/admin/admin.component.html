@@ -1,1 +1,195 @@
-<p>admin works!</p>
+<div class="admin-page">
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-logo">Alert<span>SIG</span></div>
+    <div class="sidebar-subtitle">Administration</div>
+
+    <nav class="sidebar-nav">
+      <button
+        class="nav-item"
+        [class.active]="onglet === 'incidents'"
+        (click)="onglet = 'incidents'">
+         Incidents
+      </button>
+      <button
+        class="nav-item"
+        [class.active]="onglet === 'stats'"
+        (click)="onglet = 'stats'">
+         Statistiques
+      </button>
+      <a routerLink="/" class="nav-item">
+        🗺 Voir la carte
+      </a>
+    </nav>
+
+    <button class="btn-logout" (click)="logout()">
+      Déconnexion
+    </button>
+  </div>
+
+  <!-- Contenu principal -->
+  <div class="main-content">
+
+    <!-- KPIs -->
+    <div class="kpis" *ngIf="stats">
+      <div class="kpi-card">
+        <div class="kpi-value">{{ stats.total_incidents }}</div>
+        <div class="kpi-label">Total incidents</div>
+      </div>
+      <div class="kpi-card kpi-rouge">
+        <div class="kpi-value">{{ stats.critiques }}</div>
+        <div class="kpi-label">Critiques</div>
+      </div>
+      <div class="kpi-card kpi-orange">
+        <div class="kpi-value">{{ stats.nouveaux }}</div>
+        <div class="kpi-label">Nouveaux</div>
+      </div>
+      <div class="kpi-card kpi-vert">
+        <div class="kpi-value">{{ stats.resolus }}</div>
+        <div class="kpi-label">Résolus</div>
+      </div>
+      <div class="kpi-card kpi-rouge">
+        <div class="kpi-value">{{ stats.zones_critiques }}</div>
+        <div class="kpi-label">Zones critiques</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value">{{ stats.derniere_24h }}</div>
+        <div class="kpi-label">Dernières 24h</div>
+      </div>
+    </div>
+
+    <!-- ONGLET INCIDENTS -->
+    <div *ngIf="onglet === 'incidents'">
+
+      <!-- Filtres -->
+      <div class="filtres">
+        <button
+          class="filtre-btn"
+          [class.active]="filtreStatut === 'tous'"
+          (click)="filtreStatut = 'tous'">
+          Tous ({{ incidents.length }})
+        </button>
+        <button
+          class="filtre-btn"
+          [class.active]="filtreStatut === 'nouveau'"
+          (click)="filtreStatut = 'nouveau'">
+           Nouveaux
+        </button>
+        <button
+          class="filtre-btn"
+          [class.active]="filtreStatut === 'en_cours'"
+          (click)="filtreStatut = 'en_cours'">
+           En cours
+        </button>
+        <button
+          class="filtre-btn"
+          [class.active]="filtreStatut === 'resolu'"
+          (click)="filtreStatut = 'resolu'">
+           Résolus
+        </button>
+      </div>
+
+      <!-- Tableau -->
+      <div class="table-container">
+        <div class="loading" *ngIf="loading">Chargement...</div>
+
+        <table *ngIf="!loading">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Titre</th>
+              <th>Sévérité</th>
+              <th>Statut</th>
+              <th>Zone critique</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let incident of incidentsFiltres"
+                [class.row-critique]="incident.est_zone_critique">
+              <td>
+                <span class="type-emoji">{{ incident.type_emoji }}</span>
+                {{ incident.type_libelle }}
+              </td>
+              <td>{{ incident.titre || '—' }}</td>
+              <td>
+                <span class="badge" [ngClass]="getSeveriteClass(incident.severite)">
+                  {{ getSeveriteLabel(incident.severite) }}
+                </span>
+              </td>
+              <td>
+                <span class="badge" [ngClass]="getStatutClass(incident.statut)">
+                  {{ incident.statut }}
+                </span>
+              </td>
+              <td>
+                <span *ngIf="incident.est_zone_critique" class="zone-badge">
+                  🚨 Oui
+                </span>
+                <span *ngIf="!incident.est_zone_critique" class="text-dim">Non</span>
+              </td>
+              <td class="text-dim">
+                {{ incident.created_at | date:'dd/MM/yy HH:mm' }}
+              </td>
+              <td>
+                <div class="actions">
+                  <button
+                    *ngIf="incident.statut === 'nouveau'"
+                    class="action-btn btn-encours"
+                    (click)="changerStatut(incident.id, 'en_cours')">
+                    En cours
+                  </button>
+                  <button
+                    *ngIf="incident.statut !== 'resolu'"
+                    class="action-btn btn-resolu"
+                    (click)="changerStatut(incident.id, 'resolu')">
+                    Résoudre
+                  </button>
+                  <button
+                    *ngIf="incident.statut !== 'rejete'"
+                    class="action-btn btn-rejeter"
+                    (click)="changerStatut(incident.id, 'rejete')">
+                    Rejeter
+                  </button>
+                  <button
+  class="action-btn btn-localiser"
+  (click)="voirSurCarte(incident.latitude, incident.longitude)">
+  📍 Localiser
+</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ONGLET STATS -->
+    <div *ngIf="onglet === 'stats'" class="stats-section">
+      <h2 class="section-title">Statistiques par type d'incident</h2>
+      <div class="stats-grid">
+        <div class="stat-card" *ngFor="let s of statsParType">
+          <div class="stat-emoji">{{ s.emoji }}</div>
+          <div class="stat-libelle">{{ s.libelle }}</div>
+          <div class="stat-numbers">
+            <div class="stat-num">
+              <span class="num">{{ s.total }}</span>
+              <span class="lbl">Total</span>
+            </div>
+            <div class="stat-num">
+              <span class="num rouge">{{ s.critiques }}</span>
+              <span class="lbl">Critiques</span>
+            </div>
+            <div class="stat-num">
+              <span class="num vert">{{ s.resolus }}</span>
+              <span class="lbl">Résolus</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

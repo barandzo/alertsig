@@ -1,7 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import * as L from 'leaflet';
+import { Subscription } from 'rxjs';
 import { IncidentService } from '../../services/incident.service';
+import { CarteEventService } from '../../services/carte-event.service';
 import { Incident, IncidentGeoJSON } from '../../models/incident';
 
 @Component({
@@ -15,23 +17,33 @@ export class CarteComponent implements OnInit, OnDestroy {
   private map!: L.Map;
   private markersLayer!: L.LayerGroup;
   private zonesLayer!: L.LayerGroup;
+  private rechargerSub!: Subscription;
   selectedIncident: Incident | null = null;
 
-  constructor(private incidentService: IncidentService) {}
+  constructor(
+    private incidentService: IncidentService,
+    private carteEventService: CarteEventService
+  ) {}
 
   ngOnInit(): void {
     this.initMap();
     this.chargerIncidents();
+
+    // Écoute les demandes de rechargement
+    this.rechargerSub = this.carteEventService.recharger$.subscribe(() => {
+      this.chargerIncidents();
+    });
   }
 
   ngOnDestroy(): void {
     if (this.map) this.map.remove();
+    if (this.rechargerSub) this.rechargerSub.unsubscribe();
   }
 
   private initMap(): void {
     this.map = L.map('map', {
-    center: [6.1375, 1.2123],
-    zoom: 14,
+      center: [6.1375, 1.2123],
+      zoom: 14,
       zoomControl: true
     });
 
@@ -56,7 +68,6 @@ export class CarteComponent implements OnInit, OnDestroy {
           const lat   = feature.geometry.coordinates[1];
           const lng   = feature.geometry.coordinates[0];
 
-          // Zone critique → cercle rouge
           if (props.est_zone_critique) {
             L.circle([lat, lng], {
               radius: 1000,
@@ -68,9 +79,8 @@ export class CarteComponent implements OnInit, OnDestroy {
             }).addTo(this.zonesLayer);
           }
 
-          // Marqueur
-          const size   = props.severite === 3 ? 40 : props.severite === 2 ? 34 : 28;
-          const glow   = props.severite === 3 ? '#ff3b3b' : props.severite === 2 ? '#ff7a00' : '#3b82f6';
+          const size    = props.severite === 3 ? 40 : props.severite === 2 ? 34 : 28;
+          const glow    = props.severite === 3 ? '#ff3b3b' : props.severite === 2 ? '#ff7a00' : '#3b82f6';
           const resolved = props.statut === 'resolu';
 
           const icon = L.divIcon({
@@ -93,6 +103,7 @@ export class CarteComponent implements OnInit, OnDestroy {
 
           marker.on('click', () => {
             this.selectedIncident = props;
+            this.map.setView([lat, lng], 16, { animate: true });
           });
         });
       },
@@ -109,6 +120,10 @@ export class CarteComponent implements OnInit, OnDestroy {
   }
 
   getStatutLabel(s: string): string {
-    return s === 'nouveau' ? 'Nouveau' : s === 'en_cours' ? 'En cours' : 'Résolu';
+    return s === 'nouveau' ? '🆕 Nouveau' : s === 'en_cours' ? '⚙️ En cours' : '✅ Résolu';
+  }
+
+  getStatutClass(s: string): string {
+    return s === 'nouveau' ? 'statut-nouveau' : s === 'en_cours' ? 'statut-en-cours' : 'statut-resolu';
   }
 }
