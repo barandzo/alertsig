@@ -4,8 +4,8 @@
   justify-content: space-between;
   padding: 0 24px;
   height: 56px;
-  background: #12151c;
-  border-bottom: 1px solid #252a38;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
   position: fixed;
   top: 0; left: 0; right: 0;
   z-index: 1000;
@@ -15,10 +15,10 @@
   font-family: 'Bebas Neue', sans-serif;
   font-size: 24px;
   letter-spacing: 3px;
-  color: #ff3b3b;
+  color: var(--accent);
   text-decoration: none;
 }
-.logo span { color: #e8eaf0; }
+.logo span { color: var(--text-primary); }
 
 .navbar-left {
   display: flex;
@@ -33,24 +33,30 @@
 }
 
 .nav-link {
-  color: #6b7280;
+  color: var(--text-secondary);
   text-decoration: none;
   font-size: 14px;
   transition: color .2s;
 }
-.nav-link:hover { color: #e8eaf0; }
+.nav-link:hover { color: var(--text-primary); }
 
 .user-badge {
-  background: #1a1e28;
-  border: 1px solid #252a38;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
   border-radius: 100px;
   padding: 4px 12px;
   font-size: 13px;
-  color: #e8eaf0;
+  color: var(--text-primary);
+  text-decoration: none;
+  cursor: pointer;
+}
+a.user-badge:hover {
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .btn-login {
-  background: #ff3b3b;
+  background: var(--accent);
   color: white;
   padding: 6px 16px;
   border-radius: 8px;
@@ -61,11 +67,32 @@
 
 .btn-logout {
   background: transparent;
-  border: 1px solid #252a38;
-  color: #6b7280;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
   padding: 6px 14px;
   border-radius: 8px;
   cursor: pointer;
   font-size: 13px;
 }
-.btn-logout:hover { color: #ff3b3b; border-color: #ff3b3b; }
+.btn-logout:hover { color: var(--accent); border-color: var(--accent); }
+
+.theme-toggle {
+  background: transparent;
+  border: 1px solid var(--border);
+  width: 34px; height: 34px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .2s;
+}
+.theme-toggle:hover {
+  border-color: var(--accent);
+  background: rgba(255,59,59,0.1);
+}
+.logo-img {
+  height: 36px;
+  width: auto;
+}

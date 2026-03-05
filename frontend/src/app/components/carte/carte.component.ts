@@ -7,6 +7,8 @@ import { CarteEventService } from '../../services/carte-event.service';
 import { Incident, IncidentGeoJSON } from '../../models/incident';
 import { TypeIncidentService } from '../../services/type-incident.service';
 import { FormsModule } from '@angular/forms';
+import { ThemeService } from '../../services/theme.service';
+
 
 @Component({
   selector: 'app-carte',
@@ -33,7 +35,8 @@ export class CarteComponent implements OnInit, OnDestroy {
   constructor(
     private incidentService: IncidentService,
     private carteEventService: CarteEventService,
-    private typeService: TypeIncidentService
+    private typeService: TypeIncidentService,
+    private themeService: ThemeService
   ) {}
 
   ngOnInit(): void {
@@ -58,20 +61,32 @@ export class CarteComponent implements OnInit, OnDestroy {
     if (this.rechargerSub) this.rechargerSub.unsubscribe();
   }
 
-  private initMap(): void {
-    this.map = L.map('map', {
-      center: [6.1375, 1.2123],
-      zoom: 14,
-      zoomControl: true
-    });
+private initMap(): void {
+  this.map = L.map('map', {
+    center: [6.1375, 1.2123],
+    zoom: 14,
+    attributionControl: false 
+  });
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-      maxZoom: 19
-    }).addTo(this.map);
+  this.majTuiles();
+  this.markersLayer = L.layerGroup().addTo(this.map);
+  this.zonesLayer   = L.layerGroup().addTo(this.map);
 
-    this.markersLayer = L.layerGroup().addTo(this.map);
-    this.zonesLayer   = L.layerGroup().addTo(this.map);
-  }
+  // Change les tuiles quand le thème change
+  this.themeService.theme$.subscribe(() => this.majTuiles());
+}
+
+private tuilesLayer?: L.TileLayer;
+
+private majTuiles(): void {
+  if (this.tuilesLayer) this.map.removeLayer(this.tuilesLayer);
+
+  const url = this.themeService.getTheme() === 'dark'
+    ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+    : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+
+  this.tuilesLayer = L.tileLayer(url, { maxZoom: 19 }).addTo(this.map);
+}
 
 chargerIncidents(): void {
   this.incidentService.getGeoJSON().subscribe({

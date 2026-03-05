@@ -22,6 +22,7 @@ import { ListeIncidentsComponent } from '../../components/liste-incidents/liste-
 })
 export class AccueilComponent {
   showFormulaire = false;
+  currentYear = new Date().getFullYear();
 
   ouvrirFormulaire(): void {
     this.showFormulaire = true;

@@ -1,6 +1,8 @@
 <nav class="navbar">
   <div class="navbar-left">
-    <a routerLink="/" class="logo">Alert<span>SIG</span></a>
+   <a routerLink="/" class="logo">
+  <img src="assets/logo.svg" alt="AloAlerte" class="logo-img">
+</a>
   </div>
 
   <div class="navbar-right">
@@ -12,7 +14,13 @@
       <button class="btn-logout" (click)="logout()">Déconnexion</button>
     </ng-container>
 
+    <button class="theme-toggle" (click)="toggleTheme()" [title]="isDark ? 'Mode clair' : 'Mode sombre'">
+  <span *ngIf="isDark">☀️</span>
+  <span *ngIf="!isDark">🌙</span>
+</button>
+
     <ng-template #notLoggedIn>
+      <!-- Toggle thème -->
       <a routerLink="/login" class="btn-login">Connexion</a>
     </ng-template>
   </div>

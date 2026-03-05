@@ -3,6 +3,7 @@ import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
 import { User } from '../../models/user';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-navbar',
@@ -16,7 +17,8 @@ export class NavbarComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private themeService: ThemeService
   ) {}
 
   ngOnInit(): void {
@@ -33,4 +35,14 @@ export class NavbarComponent implements OnInit {
   isAdmin(): boolean {
     return this.authService.isAdmin();
   }
+
+  // Propriété
+get isDark(): boolean {
+  return this.themeService.getTheme() === 'dark';
+}
+
+// Méthode
+toggleTheme(): void {
+  this.themeService.toggleTheme();
+}
 }

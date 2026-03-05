@@ -256,3 +256,8 @@ tr:hover td { background: #1a1e28; }
   color: #6b7280;
 }
 .btn-localiser { background: rgba(59,130,246,0.15); color: #60a5fa; }
+.logo-img {
+  height: 32px;
+  width: auto;
+  margin-bottom: 4px;
+}

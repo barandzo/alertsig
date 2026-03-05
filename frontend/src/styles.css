@@ -1,4 +1,3 @@
-/* You can add global styles to this file, and also import other style files */
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
 
 * {
@@ -7,13 +6,47 @@
   box-sizing: border-box;
 }
 
+/* ── THÈME DARK (défaut) ── */
+body[data-theme="dark"] {
+  --bg-primary    : #0a0c10;
+  --bg-secondary  : #12151c;
+  --bg-tertiary   : #1a1e28;
+  --border        : #252a38;
+  --text-primary  : #e8eaf0;
+  --text-secondary: #6b7280;
+  --text-muted    : #4b5563;
+  --accent        : #ff3b3b;
+  --accent-hover  : #e02d2d;
+  --success       : #00d4aa;
+  --warning       : #ff7a00;
+  --info          : #3b82f6;
+  --map-tiles     : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+}
+
+/* ── THÈME LIGHT ── */
+body[data-theme="light"] {
+  --bg-primary    : #f0f2f5;
+  --bg-secondary  : #ffffff;
+  --bg-tertiary   : #f8f9fb;
+  --border        : #e2e5ec;
+  --text-primary  : #1a1e28;
+  --text-secondary: #6b7280;
+  --text-muted    : #9ca3af;
+  --accent        : #ff3b3b;
+  --accent-hover  : #e02d2d;
+  --success       : #00b894;
+  --warning       : #e67e22;
+  --info          : #2563eb;
+}
+
 body {
   font-family: 'DM Sans', sans-serif;
-  background: #0a0c10;
-  color: #e8eaf0;
+  background: var(--bg-primary);
+  color: var(--text-primary);
   overflow: hidden;
+  transition: background .3s ease, color .3s ease;
 }
 
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #252a38; border-radius: 2px; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
