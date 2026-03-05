@@ -1,5 +1,53 @@
 <div class="carte-container">
+<!-- Barre de filtres -->
+<div class="filtres-barre">
 
+  <!-- Filtre par type -->
+  <div class="filtre-group">
+    <button
+      class="filtre-type-btn"
+      [class.active]="filtreType === 'tous'"
+      (click)="filtreType = 'tous'; changerFiltre()">
+      Tous
+    </button>
+    <button
+      *ngFor="let type of types"
+      class="filtre-type-btn"
+      [class.active]="filtreType === type.code"
+      [style.border-color]="filtreType === type.code ? type.couleur_hex : ''"
+      [style.color]="filtreType === type.code ? type.couleur_hex : ''"
+      (click)="filtreType = type.code; changerFiltre()">
+      {{ type.emoji }} {{ type.libelle }}
+    </button>
+  </div>
+
+  <!-- Filtre sévérité + statut -->
+  <div class="filtre-group">
+    <select class="filtre-select" [(ngModel)]="filtreSeverite" (change)="changerFiltre()">
+      <option value="tous">Toutes sévérités</option>
+      <option value="3">🔴 Critique</option>
+      <option value="2">🟠 Modéré</option>
+      <option value="1">🟡 Faible</option>
+    </select>
+
+    <select class="filtre-select" [(ngModel)]="filtreStatut" (change)="changerFiltre()">
+      <option value="tous">Tous statuts</option>
+      <option value="nouveau">Nouveau</option>
+      <option value="en_cours">En cours</option>
+      <option value="resolu">Résolu</option>
+    </select>
+
+    <button
+      class="filtre-reset"
+      (click)="reinitialiserFiltres()"
+      *ngIf="filtreType !== 'tous' || filtreStatut !== 'tous' || filtreSeverite !== 'tous'">
+      ✕ Réinitialiser
+    </button>
+  </div>
+
+</div>
+
+<div id="map"></div>
   <!-- Carte Leaflet -->
   <div id="map"></div>
 
@@ -52,6 +100,50 @@
           <span class="val">{{ selectedIncident.score_confiance }}%</span>
         </div>
       </div>
+      <!-- Votes -->
+<div class="detail-section" *ngIf="selectedIncident">
+  <div class="section-title">VOTE COMMUNAUTAIRE</div>
+
+  <!-- Score confiance -->
+  <div class="score-bar-container">
+    <div class="score-label">
+      Score de confiance
+      <span class="score-value">{{ selectedIncident.score_confiance }}%</span>
+    </div>
+    <div class="score-bar">
+      <div
+        class="score-fill"
+        [style.width.%]="selectedIncident.score_confiance"
+        [class.high]="selectedIncident.score_confiance >= 70"
+        [class.mid]="selectedIncident.score_confiance >= 30 && selectedIncident.score_confiance < 70"
+        [class.low]="selectedIncident.score_confiance < 30">
+      </div>
+    </div>
+    <div class="vote-counts">
+      <span class="confirm-count">✅ {{ selectedIncident.nb_confirmations }} confirmations</span>
+      <span class="infirm-count">❌ {{ selectedIncident.nb_infirmations }} infirmations</span>
+    </div>
+  </div>
+
+  <!-- Boutons vote -->
+  <div class="vote-buttons" *ngIf="!votEnCours">
+    <button
+      class="btn-vote btn-confirmer"
+      [class.active]="monVote === 'confirmation'"
+      (click)="voter('confirmation')">
+      ✅ {{ monVote === 'confirmation' ? 'Confirmé !' : 'Confirmer' }}
+    </button>
+    <button
+      class="btn-vote btn-infirmer"
+      [class.active]="monVote === 'infirmation'"
+      (click)="voter('infirmation')">
+      ❌ {{ monVote === 'infirmation' ? 'Infirmé !' : 'Faux signalement' }}
+    </button>
+  </div>
+
+  <div class="vote-loading" *ngIf="votEnCours">Vote en cours...</div>
+  <div class="vote-error" *ngIf="voteErreur">{{ voteErreur }}</div>
+</div>
 
       <!-- Localisation -->
       <div class="detail-section">
@@ -82,7 +174,7 @@
       <!-- Zone critique -->
       <div class="zone-critique-badge" *ngIf="selectedIncident.est_zone_critique">
         🚨 Zone critique —
-        {{ selectedIncident.nb_incidents_proches + 1 }} incidents dans 1km
+        {{ (selectedIncident.nb_incidents_proches || 0) + 1 }} incidents dans 500m
       </div>
 
     </ng-container>

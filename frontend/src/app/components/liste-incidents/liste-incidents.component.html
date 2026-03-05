@@ -1,1 +1,81 @@
-<p>liste-incidents works!</p>
+<!-- Bouton toggle (visible quand sidebar fermée) -->
+<button 
+  class="sidebar-toggle" 
+  (click)="toggleSidebar()"
+  *ngIf="!sidebarOuverte">
+  ☰ Incidents ({{ incidents.length }})
+</button>
+
+<!-- Sidebar -->
+<div class="sidebar" [class.ouverte]="sidebarOuverte">
+
+  <div class="sidebar-header">
+    <h3>Incidents actifs</h3>
+    <div class="header-right">
+      <span class="total-badge">{{ incidentsFiltres.length }}</span>
+      <button class="close-sidebar" (click)="toggleSidebar()">✕</button>
+    </div>
+  </div>
+
+  <!-- Filtres -->
+  <div class="filtres">
+    <select class="filtre-select" [(ngModel)]="filtreStatut">
+      <option value="tous">Tous les statuts</option>
+      <option value="nouveau">Nouveau</option>
+      <option value="en_cours">En cours</option>
+      <option value="resolu">Résolu</option>
+    </select>
+
+    <select class="filtre-select" [(ngModel)]="filtreType">
+      <option value="tous">Tous les types</option>
+      <option *ngFor="let type of typesUniques" [value]="type">
+        {{ type }}
+      </option>
+    </select>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading" *ngIf="loading">
+    <div class="loading-dot"></div>
+    Chargement...
+  </div>
+
+  <!-- Liste -->
+  <div class="incidents-liste" *ngIf="!loading">
+    <div
+      class="incident-item"
+      *ngFor="let incident of incidentsFiltres"
+      (click)="selectionner(incident)"
+      [class.critique]="incident.est_zone_critique">
+
+      <div class="incident-emoji">{{ incident.type_emoji }}</div>
+
+      <div class="incident-info">
+        <div class="incident-titre">
+          {{ incident.titre || incident.type_libelle }}
+        </div>
+        <div class="incident-meta">
+          <span class="badge" [ngClass]="getSeveriteClass(incident.severite)">
+            {{ incident.severite === 3 ? 'Critique' : incident.severite === 2 ? 'Modéré' : 'Faible' }}
+          </span>
+          <span class="badge" [ngClass]="getStatutClass(incident.statut)">
+            {{ incident.statut }}
+          </span>
+          <span *ngIf="incident.est_zone_critique" class="zone-tag">🚨 Zone</span>
+        </div>
+        <div class="incident-lieu">
+          📍 {{ incident.quartier || incident.adresse || '—' }}
+        </div>
+        <div class="incident-date">
+          {{ incident.created_at | date:'dd/MM HH:mm' }}
+        </div>
+      </div>
+
+    </div>
+
+    <div class="empty" *ngIf="incidentsFiltres.length === 0">
+      Aucun incident trouvé
+    </div>
+  </div>
+
+</div>

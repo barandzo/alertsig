@@ -1,0 +1,45 @@
+<!-- Bannière alerte zone critique -->
+<div class="alerte-banniere" [class.visible]="alerteVisible" *ngIf="zonesActives.length > 0">
+  
+  <!-- Header bannière -->
+  <div class="alerte-header">
+    <div class="alerte-header-left">
+      <div class="alerte-icone">🚨</div>
+      <div>
+        <strong>{{ zonesActives.length }} zone(s) critique(s) détectée(s)</strong>
+        <span>Incidents répétés dans un rayon de 500m</span>
+      </div>
+    </div>
+    <button class="alerte-fermer" (click)="fermerAlerte()">✕</button>
+  </div>
+
+  <!-- Liste des zones -->
+  <div class="zones-liste">
+    <div class="zone-item" *ngFor="let zone of zonesActives; let i = index">
+      <div class="zone-info">
+        <span class="zone-numero">Zone {{ i + 1 }}</span>
+        <span class="zone-coords">
+          📍 {{ zone.centre_lat | number:'1.4-4' }}, {{ zone.centre_lng | number:'1.4-4' }}
+        </span>
+        <span class="zone-incidents">
+          🔴 {{ zone.nb_incidents_proches + 1 }} incidents
+        </span>
+      </div>
+      <button 
+        class="btn-voir-zone"
+        (click)="voirZoneSurGoogleMaps(zone)">
+        🗺 Itinéraire
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Indicateur zones actives -->
+<div 
+  class="zones-indicateur" 
+  *ngIf="zonesActives.length > 0"
+  (click)="alerteVisible = true">
+  <div class="zone-dot"></div>
+  <span>{{ zonesActives.length }} zone(s) critique(s) — cliquer pour voir</span>
+</div>

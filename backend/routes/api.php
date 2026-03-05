@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\IncidentController;
 use App\Http\Controllers\Api\TypeIncidentController;
+use App\Http\Controllers\Api\VoteController;
 
 // ── Auth (public) ──────────────────────────────
 Route::prefix('auth')->group(function () {
@@ -28,4 +29,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('incidents',                    [IncidentController::class, 'store']);
     Route::put('incidents/{id}/statut',         [IncidentController::class, 'changerStatut']);
     Route::get('incidents/stats/dashboard',     [IncidentController::class, 'stats']);
+    Route::post('incidents/{id}/voter',    [VoteController::class, 'voter']);
+    Route::get('incidents/{id}/mon-vote',  [VoteController::class, 'monVote']);
 });
+Route::get('alertes/zones-critiques', [IncidentController::class, 'zonesCritiques']);

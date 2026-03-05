@@ -158,4 +158,22 @@ class IncidentController extends Controller
             'par_type'  => $parType
         ]);
     }
+
+    // Zones critiques actives
+public function zonesCritiques()
+{
+    $zones = DB::select('SELECT * FROM v_zones_critiques LIMIT 20');
+    
+    $alertes = DB::table('alertes_zones')
+        ->where('est_lue', false)
+        ->where('created_at', '>=', now()->subHours(24))
+        ->orderByDesc('created_at')
+        ->get();
+
+    return response()->json([
+        'zones'   => $zones,
+        'alertes' => $alertes,
+        'total'   => count($zones)
+    ]);
+}
 }

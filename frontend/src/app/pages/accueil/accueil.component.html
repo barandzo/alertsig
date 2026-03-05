@@ -1,15 +1,15 @@
 <app-navbar></app-navbar>
+<app-alerte-zone></app-alerte-zone>
+<app-liste-incidents></app-liste-incidents>
 
 <div class="page-content">
   <app-carte></app-carte>
 </div>
 
-<!-- Bouton signalement -->
 <button class="fab" (click)="ouvrirFormulaire()" [class.open]="showFormulaire">
   +
 </button>
 
-<!-- Formulaire signalement -->
 <app-formulaire-signalement
   *ngIf="showFormulaire"
   (fermer)="fermerFormulaire()">

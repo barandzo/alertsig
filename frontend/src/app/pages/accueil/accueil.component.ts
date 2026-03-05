@@ -2,7 +2,9 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { CarteComponent } from '../../components/carte/carte.component';
+import { AlerteZoneComponent } from '../../components/alerte-zone/alerte-zone.component';
 import { FormulaireSignalementComponent } from '../../components/formulaire-signalement/formulaire-signalement.component';
+import { ListeIncidentsComponent } from '../../components/liste-incidents/liste-incidents.component';
 
 @Component({
   selector: 'app-accueil',
@@ -11,7 +13,9 @@ import { FormulaireSignalementComponent } from '../../components/formulaire-sign
     CommonModule,
     NavbarComponent,
     CarteComponent,
-    FormulaireSignalementComponent
+    FormulaireSignalementComponent,
+    AlerteZoneComponent,
+  ListeIncidentsComponent  
   ],
   templateUrl: './accueil.component.html',
   styleUrl: './accueil.component.css'

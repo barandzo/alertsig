@@ -53,4 +53,18 @@ export class IncidentService {
   getStats(): Observable<any> {
     return this.http.get(`${this.apiUrl}/stats/dashboard`);
   }
+
+
+
+getZonesCritiques(): Observable<any> {
+  return this.http.get(`/api/alertes/zones-critiques`);
+}
+
+voter(incidentId: string, typeVote: 'confirmation' | 'infirmation'): Observable<any> {
+  return this.http.post(`${this.apiUrl}/${incidentId}/voter`, { type_vote: typeVote });
+}
+
+getMonVote(incidentId: string): Observable<any> {
+  return this.http.get(`${this.apiUrl}/${incidentId}/mon-vote`);
+}
 }
